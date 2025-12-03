@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Villa Costa',
+      title: 'Ezee Hotel',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         fontFamily: 'MyFont',

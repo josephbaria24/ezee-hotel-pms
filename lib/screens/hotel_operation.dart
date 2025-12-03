@@ -624,7 +624,7 @@ int? _getFirstBookedDateIndex(List<DateTime> dates) {
                     ),
                     const SizedBox(height: 10),
                     const Text(
-                      'Villa Costa',
+                      'Ezee Hotel',
                       style: TextStyle(
                         color: Colors.brown,
                         fontSize: 18,

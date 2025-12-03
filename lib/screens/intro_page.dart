@@ -61,7 +61,7 @@ class _IntroScreenState extends State<IntroScreen> {
       title: 'Discover more,\nWorry less.',
       subtitle: 'Find rooms, facilities, and memories\nall in one place.',
       caption: 'Everything you need. No hassle.',
-      footer: 'villa costa',
+      footer: 'Ezee Hotel',
       backgroundPath: 'lib/assets/images/bg2.jpg',
     ),
     OnboardingPage(
@@ -166,7 +166,7 @@ class _IntroScreenState extends State<IntroScreen> {
                                   ),
                                   const SizedBox(width: 12),
                                   Text(
-                                    "VILLA COSTA".toUpperCase(),
+                                    "EZEE HOTEL".toUpperCase(),
                                     style: const TextStyle(
                                       fontSize: 10,
                                       color: Colors.white54,
