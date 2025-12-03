@@ -2,10 +2,10 @@
 
 // ignore_for_file: prefer_const_constructors
 
-import 'package:villa_costa/model/room_model.dart';
-import 'package:villa_costa/screens/DatePreferencesPage.dart';
-import 'package:villa_costa/screens/dashboard.dart';
-import 'package:villa_costa/screens/full_screen_image.dart';
+import 'package:ezee/model/room_model.dart';
+import 'package:ezee/screens/DatePreferencesPage.dart';
+import 'package:ezee/screens/dashboard.dart';
+import 'package:ezee/screens/full_screen_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -59,7 +59,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
           },
         label: Text('Next - ₱${NumberFormat('#,##0').format(totalPrice)}'),
         icon: Icon(Icons.arrow_forward),
-        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+        backgroundColor: const Color.fromARGB(255, 148, 132, 87),
         foregroundColor: Colors.white,
       ),
       body: Column(

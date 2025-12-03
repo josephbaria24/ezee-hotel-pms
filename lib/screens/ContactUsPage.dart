@@ -135,7 +135,7 @@ class _ContactuspageState extends State<Contactuspage> {
                         ),
                         const SizedBox(height: 6),
                         const Text(
-                          'Mercado De San Miguel, Puerto.\nPrinceton City, Palomar, 5200',
+                          'El Nido, Palawan, Philippines',
                           style: TextStyle(
                             fontSize: 16,
                             height: 1.5,
@@ -225,7 +225,7 @@ class _ContactuspageState extends State<Contactuspage> {
                         ),
                         const SizedBox(height: 6),
                          const Text(
-                      'hello@costovilla.com',
+                      'ezeehotel@gmail.com',
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.blue,

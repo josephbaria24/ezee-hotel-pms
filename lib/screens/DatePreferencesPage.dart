@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:villa_costa/model/room_model.dart';
+import 'package:ezee/model/room_model.dart';
 import 'dart:convert';
 
 
@@ -345,7 +345,7 @@ Row(
 
         label: Text('Book Now - ₱${NumberFormat('#,##0').format(totalPrice)}'),
         icon: Icon(Icons.check),
-        backgroundColor: Colors.black,
+        backgroundColor: const Color.fromARGB(255, 179, 143, 78),
         foregroundColor: Colors.white,
       ),
       body: SafeArea(

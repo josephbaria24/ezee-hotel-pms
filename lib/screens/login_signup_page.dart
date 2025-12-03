@@ -3,8 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:lottie/lottie.dart';
-import 'package:villa_costa/screens/dashboard.dart';
-import 'package:villa_costa/screens/hotel_operation.dart';
+import 'package:ezee/screens/dashboard.dart';
+import 'package:ezee/screens/hotel_operation.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -62,7 +62,7 @@ Widget build(BuildContext context) {
                     const SizedBox(height: 10),
                     Center(
   child: Image.asset(
-    'lib/assets/images/VC-1.png',
+    'lib/assets/images/ezee.png',
     width: 200, // set desired width
     height: 200, // set desired height
     fit: BoxFit.contain, // or cover, fill, etc.
@@ -71,7 +71,7 @@ Widget build(BuildContext context) {
 
                     Center(
                       child: const Text(
-                        "Welcome to Villa Costa",
+                        "Welcome to Ezee Hotel",
                         style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
                         textAlign: TextAlign.center,
                       ),

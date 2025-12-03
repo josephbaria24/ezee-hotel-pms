@@ -6,7 +6,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
-import 'package:villa_costa/data/room_data.dart';
+import 'package:ezee/data/room_data.dart';
 
 class MyBookedRoomsPage extends StatefulWidget {
   const MyBookedRoomsPage({super.key});
@@ -49,6 +49,14 @@ class _MyBookedRoomsPageState extends State<MyBookedRoomsPage> {
   List<HotelBookingGroup> hotelGroups = [];
   bool isLoading = true;
 
+  // Theme colors
+  static const Color beigeBackground = Color(0xFFF5F1ED);
+  static const Color beigeCard = Color(0xFFFAF8F6);
+  static const Color beigeAccent = Color(0xFFE8DFD6);
+  static const Color darkText = Color(0xFF2C2317);
+  static const Color mutedText = Color(0xFF6B6257);
+  static const Color accentBrown = Color(0xFF8B7355);
+
   @override
   void initState() {
     super.initState();
@@ -66,7 +74,6 @@ class _MyBookedRoomsPageState extends State<MyBookedRoomsPage> {
       
       List<BookingInfo> loadedBookings = [];
       
-      // Process all booking keys
       for (String key in allKeys) {
         if (key.startsWith('booking_')) {
           final bookingString = prefs.getString(key);
@@ -74,7 +81,6 @@ class _MyBookedRoomsPageState extends State<MyBookedRoomsPage> {
           
           if (bookingString != null) {
             try {
-              // Try the more structured approach with better regex
               final datesMatch = RegExp(r"dates:\s*\[(.*?)\]").firstMatch(bookingString);
               final hotelNameMatch = RegExp(r"hotelName:\s*(.*?)(?:,|}|\))").firstMatch(bookingString);
               final guestsMatch = RegExp(r"guests:\s*(\d+)").firstMatch(bookingString);
@@ -84,13 +90,11 @@ class _MyBookedRoomsPageState extends State<MyBookedRoomsPage> {
                 String hotelName = hotelNameMatch.group(1) ?? "Unknown Hotel";
                 String guestsStr = guestsMatch.group(1) ?? "1";
                 
-                // Clean quotes if present around hotel name
                 hotelName = hotelName.trim();
                 if (hotelName.startsWith('"') && hotelName.endsWith('"')) {
                   hotelName = hotelName.substring(1, hotelName.length - 1);
                 }
                 
-                // Handle dates
                 List<String> dateStrings = [];
                 if (datesPart.contains(",")) {
                   dateStrings = datesPart.split(",");
@@ -119,7 +123,6 @@ class _MyBookedRoomsPageState extends State<MyBookedRoomsPage> {
         }
       }
       
-      // Group bookings by hotel name
       Map<String, HotelBookingGroup> groupedBookings = {};
       
       for (var booking in loadedBookings) {
@@ -135,13 +138,11 @@ class _MyBookedRoomsPageState extends State<MyBookedRoomsPage> {
         }
       }
       
-      // Convert to list and sort each group's dates
       List<HotelBookingGroup> groups = groupedBookings.values.toList();
       for (var group in groups) {
-        group.checkInDates.sort(); // Sort dates within each group
+        group.checkInDates.sort();
       }
       
-      // Sort groups by the earliest check-in date
       groups.sort((a, b) {
         if (a.checkInDates.isEmpty) return 1;
         if (b.checkInDates.isEmpty) return -1;
@@ -160,544 +161,475 @@ class _MyBookedRoomsPageState extends State<MyBookedRoomsPage> {
     }
   }
 
-
-
-
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    backgroundColor: Colors.white,
-    appBar: AppBar(
-      leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_outlined, size: 18),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: beigeBackground,
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+          onPressed: () => Navigator.pop(context),
         ),
-      scrolledUnderElevation: 0,
-      title: Text('My Booked Rooms', style: TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.bold
-      ),),
-      backgroundColor: Colors.white,
-      foregroundColor: Colors.black,
-    ),
-    body: isLoading
-        ? Center(child: CircularProgressIndicator())
-        : hotelGroups.isEmpty
-            ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Lottie.asset('lib/assets/icons/empty.json', width: 150),
-                    SizedBox(height: 16),
-                    Text('No bookings yet', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey[700])),
-                    SizedBox(height: 8),
-                    ElevatedButton(
-                      onPressed: _loadBookings,
-                      child: Text('Refresh'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        foregroundColor: Colors.white,
-                      ),
-                    ),
-                    SizedBox(height: 100,)
-                  ],
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        title: Text(
+          'My Bookings',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: darkText,
+            letterSpacing: -0.5,
+          ),
+        ),
+        backgroundColor: beigeBackground,
+        foregroundColor: darkText,
+      ),
+      body: isLoading
+          ? Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(accentBrown),
+                strokeWidth: 2.5,
+              ),
+            )
+          : hotelGroups.isEmpty
+              ? _buildEmptyState()
+              : RefreshIndicator(
+                  onRefresh: _loadBookings,
+                  color: accentBrown,
+                  backgroundColor: beigeCard,
+                  child: ListView.builder(
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    physics: BouncingScrollPhysics(),
+                    itemCount: hotelGroups.length,
+                    itemBuilder: (context, index) => _buildBookingCard(hotelGroups[index]),
+                  ),
                 ),
-              )
-            : RefreshIndicator(
-                onRefresh: _loadBookings,
-                child: ListView.builder(
-                  physics: BouncingScrollPhysics(),
-                  itemCount: hotelGroups.length,
-                  itemBuilder: (context, index) {
-                    final group = hotelGroups[index];
+    );
+  }
 
-                    return AnimatedContainer(
-                      duration: Duration(milliseconds: 200),
-                      curve: Curves.easeInOut,
-                      margin: EdgeInsets.symmetric(
-                        horizontal: 16, 
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 10,
-                            offset: Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Material(
-                          color: Colors.transparent,
-                          child: Theme(
-                            data: Theme.of(context).copyWith(
-                              dividerColor: Colors.transparent,
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Lottie.asset('lib/assets/icons/empty.json', width: 180, height: 180),
+          SizedBox(height: 24),
+          Text(
+            'No bookings yet',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: darkText,
+              letterSpacing: -0.5,
+            ),
+          ),
+          SizedBox(height: 8),
+          Text(
+            'Your upcoming reservations will appear here',
+            style: TextStyle(
+              fontSize: 14,
+              color: mutedText,
+            ),
+          ),
+          SizedBox(height: 24),
+          TextButton.icon(
+            onPressed: _loadBookings,
+            icon: Icon(Icons.refresh_rounded, size: 18),
+            label: Text('Refresh'),
+            style: TextButton.styleFrom(
+              foregroundColor: accentBrown,
+              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              backgroundColor: beigeCard,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(color: beigeAccent, width: 1),
+              ),
+            ),
+          ),
+          SizedBox(height: 100),
+        ],
+      ),
+    );
+  }
+// Continued from Part 1...
+  
+  Widget _buildBookingCard(HotelBookingGroup group) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: beigeCard,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: beigeAccent, width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: darkText.withOpacity(0.04),
+            blurRadius: 12,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Theme(
+        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          tilePadding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+          childrenPadding: EdgeInsets.zero,
+          leading: Container(
+            width: 52,
+            height: 52,
+            decoration: BoxDecoration(
+              color: beigeAccent,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(Icons.hotel_rounded, color: accentBrown, size: 24),
+          ),
+          title: Text(
+            group.hotelName,
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
+              color: darkText,
+              letterSpacing: -0.3,
+            ),
+          ),
+          subtitle: Padding(
+            padding: EdgeInsets.only(top: 4),
+            child: Row(
+              children: [
+                Icon(Icons.event_note_rounded, size: 14, color: mutedText),
+                SizedBox(width: 4),
+                Text(
+                  '${group.checkInDates.length} booking${group.checkInDates.length > 1 ? 's' : ''}',
+                  style: TextStyle(color: mutedText, fontSize: 13),
+                ),
+                SizedBox(width: 12),
+                Icon(Icons.people_outline_rounded, size: 14, color: mutedText),
+                SizedBox(width: 4),
+                Text(
+                  '${group.guests} guest${group.guests > 1 ? 's' : ''}',
+                  style: TextStyle(color: mutedText, fontSize: 13),
+                ),
+              ],
+            ),
+          ),
+          trailing: AnimatedRotation(
+            turns: group.isExpanded ? 0.5 : 0.0,
+            duration: Duration(milliseconds: 200),
+            child: Container(
+              padding: EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: beigeAccent.withOpacity(0.5),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(Icons.keyboard_arrow_down_rounded, color: accentBrown, size: 20),
+            ),
+          ),
+          initiallyExpanded: group.isExpanded,
+          onExpansionChanged: (expanded) {
+            setState(() {
+              if (expanded) {
+                for (var otherGroup in hotelGroups) {
+                  if (otherGroup != group) otherGroup.isExpanded = false;
+                }
+              }
+              group.isExpanded = expanded;
+            });
+          },
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: beigeBackground.withOpacity(0.5),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(16),
+                  bottomRight: Radius.circular(16),
+                ),
+              ),
+              child: Column(
+                children: [
+                  // Dates Section
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.calendar_month_rounded, size: 16, color: accentBrown),
+                            SizedBox(width: 8),
+                            Text(
+                              'Check-in Dates',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: accentBrown,
+                                letterSpacing: 0.5,
+                                height: 1,
+                              ),
                             ),
-                            child: ExpansionTile(
-                              expandedCrossAxisAlignment: CrossAxisAlignment.start,
-                              expandedAlignment: Alignment.centerLeft,
-                              tilePadding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                              childrenPadding: EdgeInsets.zero,
-                              leading: Container(
-                                width: 48,
-                                height: 48,
-                                decoration: BoxDecoration(
-                                  color: const Color.fromARGB(255, 253, 253, 253),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Icon(Icons.hotel, color: Colors.black),
-                              ),
-                              title: Text(
-                                group.hotelName, 
-                                style: TextStyle(fontWeight: FontWeight.bold)
-                              ),
-                              subtitle: Text(
-                                '${group.checkInDates.length} booking(s) · ${group.guests} guest(s)',
-                                style: TextStyle(color: Colors.grey[700]),
-                              ),
-                              initiallyExpanded: group.isExpanded,
-                              onExpansionChanged: (expanded) {
-                                setState(() {
-                                  // Close all other groups when opening this one
-                                  if (expanded) {
-                                    for (var otherGroup in hotelGroups) {
-                                      if (otherGroup != group) {
-                                        otherGroup.isExpanded = false;
-                                      }
-                                    }
-                                  }
-                                  group.isExpanded = expanded;
-                                });
-                              },
-                              // Custom trailing animation for the expansion arrow
-                              trailing: AnimatedRotation(
-                                turns: group.isExpanded ? 0.5 : 0.0,
-                                duration: Duration(milliseconds: 300),
-                                child: Icon(Icons.keyboard_arrow_down),
-                              ),
+                          ],
+                        ),
+                        SizedBox(height: 12),
+                        ...group.checkInDates.map((date) {
+                          final formattedDate = DateFormat('EEEE, MMMM d, y').format(date);
+                          return Container(
+                            margin: EdgeInsets.only(bottom: 8),
+                            padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: beigeAccent.withOpacity(0.5), width: 1),
+                            ),
+                            child: Row(
                               children: [
-                                AnimatedSize(
-                                  duration: Duration(milliseconds: 400),
-                                  curve: Curves.easeOutQuart,
-                                  child: AnimatedOpacity(
-                                    opacity: group.isExpanded ? 1.0 : 0.0,
-                                    duration: Duration(milliseconds: 300),
-                                    curve: Curves.easeInOut,
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                                      children: [
-                                        // Show check-in dates
-                                        ...group.checkInDates.asMap().entries.map((entry) {
-                                          final index = entry.key;
-                                          final date = entry.value;
-                                          final formattedDate = DateFormat('EEEE, MMMM d, y').format(date);
-                                          
-                                          return AnimatedSlide(
-                                            offset: Offset(0, group.isExpanded ? 0 : 0.2),
-                                            duration: Duration(milliseconds: 300 + (index * 50)),
-                                            curve: Curves.easeOutCubic,
-                                            child: AnimatedOpacity(
-                                              opacity: group.isExpanded ? 1.0 : 0.0,
-                                              duration: Duration(milliseconds: 300 + (index * 50)),
-                                              curve: Curves.easeIn,
-                                              child: Column(
-                                                children: [
-                                                  ListTile(
-                                                    leading: Padding(
-                                                      padding: const EdgeInsets.only(left: 16.0),
-                                                      child: Icon(Icons.calendar_today, size: 20),
-                                                    ),
-                                                    title: Text('Check-in: $formattedDate', 
-                                                      style: TextStyle(fontSize: 14)),
-                                                  ),
-                                                  Divider(height: 1, indent: 72),
-                                                ],
-                                              ),
-                                            ),
-                                          );
-                                        }).toList(),
-
-                                        Divider(thickness: 1),
-
-                                        // Rating and feedback section with staggered animation
-                                        AnimatedSlide(
-                                          offset: Offset(0, group.isExpanded ? 0 : 0.2),
-                                          duration: Duration(milliseconds: 400),
-                                          curve: Curves.easeOutCubic,
-                                          child: AnimatedOpacity(
-                                            opacity: group.isExpanded ? 1.0 : 0.0,
-                                            duration: Duration(milliseconds: 400),
-                                            curve: Curves.easeIn,
-                                            child: Padding(
-                                              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
-                                              child: StatefulBuilder(
-                                                builder: (context, setInnerState) {
-                                                  double currentRating = 0;
-                                                  TextEditingController feedbackController = TextEditingController();
-
-                                                  return Column(
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children: [
-                                                      Text('Rate Your Stay:', 
-                                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                                                      SizedBox(height: 8),
-                                                      RatingBar.builder(
-                                                        initialRating: currentRating,
-                                                        minRating: 1,
-                                                        direction: Axis.horizontal,
-                                                        allowHalfRating: true,
-                                                        itemCount: 5,
-                                                        itemSize: 30,
-                                                        itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-                                                        itemBuilder: (context, _) => Icon(Icons.star, color: Colors.amber),
-                                                        onRatingUpdate: (rating) {
-                                                          setInnerState(() {
-                                                            currentRating = rating;
-                                                          });
-                                                        },
-                                                      ),
-                                                      SizedBox(height: 16),
-                                                      TextField(
-                                                        controller: feedbackController,
-                                                        maxLines: 3,
-                                                        decoration: InputDecoration(
-                                                          labelText: 'Suggestions or Recommendations',
-                                                          border: OutlineInputBorder(
-                                                            borderRadius: BorderRadius.circular(8),
-                                                          ),
-                                                          focusedBorder: OutlineInputBorder(
-                                                            borderRadius: BorderRadius.circular(8),
-                                                            borderSide: BorderSide(color: Colors.black, width: 2),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      SizedBox(height: 12),
-                                                      Align(
-                                                        alignment: Alignment.centerRight,
-                                                        child: ElevatedButton(
-                                                          onPressed: () {
-                                                            print('Rating: $currentRating');
-                                                            print('Feedback: ${feedbackController.text}');
-                                                            ScaffoldMessenger.of(context).showSnackBar(
-                                                              SnackBar(
-                                                                behavior: SnackBarBehavior.floating,
-                                                                margin: EdgeInsets.all(8),
-                                                                shape: RoundedRectangleBorder(
-                                                                  borderRadius: BorderRadius.circular(8),
-                                                                ),
-                                                                content: Text('Thank you for your feedback!'),
-                                                              ),
-                                                            );
-                                                          },
-                                                          child: Text('Submit'),
-                                                          style: ElevatedButton.styleFrom(
-                                                            backgroundColor: Colors.black,
-                                                            foregroundColor: Colors.white,
-                                                            elevation: 2,
-                                                            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                                                            shape: RoundedRectangleBorder(
-                                                              borderRadius: BorderRadius.circular(8),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  );
-                                                },
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-
-                                        // Actions: View Details and Cancel with staggered animation
-                                        AnimatedSlide(
-                                          offset: Offset(0, group.isExpanded ? 0 : 0.2),
-                                          duration: Duration(milliseconds: 500),
-                                          curve: Curves.easeOutCubic,
-                                          child: AnimatedOpacity(
-                                            opacity: group.isExpanded ? 1.0 : 0.0,
-                                            duration: Duration(milliseconds: 500),
-                                            curve: Curves.easeIn,
-                                            child: Padding(
-                                              padding: const EdgeInsets.all(16.0),
-                                              child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                  TextButton.icon(
-                                                    icon: Icon(Icons.info_outline, size: 18),
-                                                    onPressed: () {
-                                                      // TODO: View details logic
-                                                    },
-                                                    label: Text('View Details'),
-                                                    style: TextButton.styleFrom(
-                                                      foregroundColor: Colors.black,
-                                                    ),
-                                                  ),
-                                                  TextButton.icon(
-                                                    icon: Icon(Icons.cancel_outlined, size: 18),
-                                                    onPressed: () async {
-                                                      final shouldCancel = await showDialog<bool>(
-                                                        context: context,
-                                                        barrierDismissible: false,
-                                                        builder: (context) => AlertDialog(
-                                                          shape: RoundedRectangleBorder(
-                                                            borderRadius: BorderRadius.circular(16),
-                                                          ),
-                                                          title: Text('Cancel Booking'),
-                                                          content: Text('Are you sure you want to cancel this booking?'),
-                                                          actions: [
-                                                            TextButton(
-                                                              onPressed: () => Navigator.pop(context, false),
-                                                              child: Text('No'),
-                                                              style: TextButton.styleFrom(foregroundColor: Colors.black),
-                                                            ),
-                                                            TextButton(
-                                                              onPressed: () => Navigator.pop(context, true),
-                                                              child: Text('Yes'),
-                                                              style: TextButton.styleFrom(foregroundColor: Colors.red),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ) ?? false;
-
-                                                      if (shouldCancel) {
-                                                        _deleteAllBookings();
-                                                      }
-                                                    },
-                                                    label: Text('Cancel'),
-                                                    style: TextButton.styleFrom(
-                                                      foregroundColor: Colors.red,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
+                                Container(
+                                  width: 6,
+                                  height: 6,
+                                  decoration: BoxDecoration(
+                                    color: accentBrown,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                                SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    formattedDate,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: darkText,
+                                      fontWeight: FontWeight.w500,
                                     ),
                                   ),
                                 ),
                               ],
                             ),
+                          );
+                        }).toList(),
+                      ],
+                    ),
+                  ),
+
+                  Divider(height: 1, thickness: 1, color: beigeAccent),
+
+                  // Rating Section
+                  _buildRatingSection(group),
+
+                  Divider(height: 1, thickness: 1, color: beigeAccent),
+
+                  // Actions
+                  Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: () {},
+                            icon: Icon(Icons.info_outline_rounded, size: 16),
+                            label: Text('Details'),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: accentBrown,
+                              side: BorderSide(color: beigeAccent, width: 1.5),
+                              padding: EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    );
+                        SizedBox(width: 12),
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: () => _showCancelDialog(group),
+                            icon: Icon(Icons.close_rounded, size: 16),
+                            label: Text('Cancel'),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: Color(0xFFB85C5C),
+                              side: BorderSide(color: Color(0xFFE8B4B4), width: 1.5),
+                              padding: EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRatingSection(HotelBookingGroup group) {
+    return StatefulBuilder(
+      builder: (context, setInnerState) {
+        double currentRating = 0;
+        TextEditingController feedbackController = TextEditingController();
+
+        return Container(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.star_rounded, size: 16, color: accentBrown),
+                  SizedBox(width: 8),
+                  Text(
+                    'Rate Your Stay',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: accentBrown,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 16),
+              Center(
+                child: RatingBar.builder(
+                  initialRating: currentRating,
+                  minRating: 1,
+                  direction: Axis.horizontal,
+                  allowHalfRating: true,
+                  itemCount: 5,
+                  itemSize: 32,
+                  itemPadding: EdgeInsets.symmetric(horizontal: 6),
+                  itemBuilder: (context, _) => Icon(
+                    Icons.star_rounded,
+                    color: Color(0xFFD4A574),
+                  ),
+                  onRatingUpdate: (rating) {
+                    setInnerState(() => currentRating = rating);
                   },
                 ),
               ),
-  );
-}
-
-
-
-
-
-// Future<void> _cancelBooking(int index) async {
-//   try {
-//     setState(() {
-//       isLoading = true;
-//     });
-
-//     // Clear all locally saved booking data
-//     final prefs = await SharedPreferences.getInstance();
-//     await prefs.remove('bookings');     // if you stored full bookings
-//     await prefs.remove('bookingIds');   // if you also store booking IDs
-
-//     // Clear UI list
-//     hotelGroups.clear();
-
-//     // Show feedback
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       SnackBar(
-//         content: Text('All bookings cancelled successfully'),
-//         backgroundColor: Colors.green,
-//       ),
-//     );
-//   } catch (e) {
-//     print('Error cancelling bookings: $e');
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       SnackBar(
-//         content: Text('Failed to cancel bookings.'),
-//         backgroundColor: Colors.red,
-//       ),
-//     );
-//   } finally {
-//     setState(() {
-//       isLoading = false;
-//     });
-//   }
-// }
-
-
-
-
-/// Deletes a booking from SharedPreferences by hotel ID
-Future<bool> _deleteBooking(String hotelId) async {
-  try {
-    final prefs = await SharedPreferences.getInstance();
-    
-    // Check if the booking exists
-    final bookingKey = 'booking_$hotelId';
-    final exists = prefs.containsKey(bookingKey);
-    
-    if (!exists) {
-      print('Booking for hotel ID $hotelId not found');
-      return false;
-    }
-    
-    // Optional: Get the booking data for logging before deletion
-    final bookingData = prefs.getString(bookingKey);
-    
-    // Delete the booking data
-    final result = await prefs.remove(bookingKey);
-    
-    if (result) {
-      print('Successfully deleted booking for hotel ID $hotelId: $bookingData');
-    } else {
-      print('Failed to delete booking for hotel ID $hotelId');
-    }
-    
-    return result;
-  } catch (e) {
-    print('Error deleting booking: $e');
-    return false;
+              SizedBox(height: 20),
+              TextField(
+                controller: feedbackController,
+                maxLines: 3,
+                style: TextStyle(fontSize: 14, color: darkText),
+                decoration: InputDecoration(
+                  labelText: 'Share your experience',
+                  labelStyle: TextStyle(color: mutedText, fontSize: 13),
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: beigeAccent, width: 1),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: beigeAccent, width: 1),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: accentBrown, width: 1.5),
+                  ),
+                ),
+              ),
+              SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        behavior: SnackBarBehavior.floating,
+                        margin: EdgeInsets.all(16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        backgroundColor: accentBrown,
+                        content: Text('Thank you for your feedback!'),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: accentBrown,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    padding: EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Text(
+                    'Submit Feedback',
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
-}
 
-/// Delete all bookings for a specific hotel
-Future<void> _deleteAllBookingsForHotel(String hotelId) async {
-  final result = await _deleteBooking(hotelId);
-  if (result) {
-    // You might want to update UI or notify the user here
-    setState(() {
-      // Refresh the hotel groups if you're maintaining them in state
-      _loadBookings(); // Assuming you have this method to reload bookings
-    });
+  void _showCancelDialog(HotelBookingGroup group) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: beigeCard,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(
+          'Cancel Booking',
+          style: TextStyle(fontWeight: FontWeight.w600, color: darkText),
+        ),
+        content: Text(
+          'Are you sure you want to cancel this booking? This action cannot be undone.',
+          style: TextStyle(color: mutedText, fontSize: 14),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Keep Booking'),
+            style: TextButton.styleFrom(foregroundColor: mutedText),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _deleteAllBookings();
+            },
+            child: Text('Cancel Booking'),
+            style: TextButton.styleFrom(foregroundColor: Color(0xFFB85C5C)),
+          ),
+        ],
+      ),
+    );
   }
-}
 
-/// Delete a specific booking from a hotel on a specific date
-Future<bool> _deleteSpecificBooking(String hotelId, DateTime bookingDate) async {
-  try {
-    final prefs = await SharedPreferences.getInstance();
-    final bookingKey = 'booking_$hotelId';
-    
-    if (!prefs.containsKey(bookingKey)) {
+  // Delete methods from original code
+  Future<bool> _deleteBooking(String hotelId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      return await prefs.remove('booking_$hotelId');
+    } catch (e) {
       return false;
     }
-    
-    // Get the current booking data
-    final bookingString = prefs.getString(bookingKey);
-    if (bookingString == null) {
-      return false;
-    }
-    
-    // Extract the date strings from the stored format
-    // This is a basic parser for the format used in _saveBookedDates
-    final datePattern = RegExp(r'dates: \[(.*?)\]');
-    final datesMatch = datePattern.firstMatch(bookingString);
-    
-    if (datesMatch == null || datesMatch.groupCount < 1) {
-      return false;
-    }
-    
-    // Extract other booking information
-    final guestPattern = RegExp(r'guests: (\d+)');
-    final hotelNamePattern = RegExp(r'hotelName: (.*?)(?:}|$)');
-    
-    final guestsMatch = guestPattern.firstMatch(bookingString);
-    final hotelNameMatch = hotelNamePattern.firstMatch(bookingString);
-    
-    final int guestCount = guestsMatch != null ? int.parse(guestsMatch.group(1) ?? '0') : 0;
-    final String hotelName = hotelNameMatch != null ? hotelNameMatch.group(1) ?? '' : '';
-    
-    // Parse the dates
-    final dateStrings = datesMatch.group(1)?.split(', ') ?? [];
-    final dates = dateStrings.map((dateStr) => DateTime.parse(dateStr.trim())).toList();
-    
-    // Remove the specific date
-    final dateToRemoveString = bookingDate.toIso8601String();
-    dates.removeWhere((date) => date.toIso8601String() == dateToRemoveString);
-    
-    // If there are no more dates, delete the entire booking
-    if (dates.isEmpty) {
-      return await _deleteBooking(hotelId);
-    }
-    
-    // Otherwise, save the updated dates list
-    final updatedDateStrings = dates.map((date) => date.toIso8601String()).toList();
-    final updatedBookingString = '{dates: [${updatedDateStrings.join(", ")}], guests: $guestCount, hotelName: $hotelName}';
-    
-    await prefs.setString(bookingKey, updatedBookingString);
-    print('Updated booking after removing date $bookingDate: $updatedBookingString');
-    
-    return true;
-  } catch (e) {
-    print('Error deleting specific booking: $e');
-    return false;
   }
-}
 
-/// Delete all bookings from SharedPreferences
-Future<void> _deleteAllBookings() async {
-  try {
-    final prefs = await SharedPreferences.getInstance();
-
-    // Get all keys that start with 'booking_'
-    final allKeys = prefs.getKeys();
-    final bookingKeys = allKeys.where((key) => key.startsWith('booking_')).toList();
-
-    if (bookingKeys.isEmpty) {
-      print('No bookings found to delete');
+  Future<void> _deleteAllBookings() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final bookingKeys = prefs.getKeys().where((k) => k.startsWith('booking_')).toList();
+      for (final key in bookingKeys) await prefs.remove(key);
+      await _loadBookings();
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('No bookings to delete')),
+        SnackBar(
+          content: Text('Booking cancelled successfully'),
+          backgroundColor: accentBrown,
+          behavior: SnackBarBehavior.floating,
+          margin: EdgeInsets.all(16),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
       );
-      return;
+    } catch (e) {
+      print('Error: $e');
     }
-
-    // Delete each booking
-    bool allDeleted = true;
-    for (final key in bookingKeys) {
-      final result = await prefs.remove(key);
-      if (!result) {
-        allDeleted = false;
-        print('Failed to delete booking with key: $key');
-      }
-    }
-
-    print('Deleted ${bookingKeys.length} bookings. All successful: $allDeleted');
-
-    // Auto refresh bookings list
-    await _loadBookings();
-
-    // Show result message
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(allDeleted
-            ? 'All bookings canceled successfully'
-            : 'Some bookings could not be deleted'),
-        backgroundColor: allDeleted ? Colors.green : Colors.orange,
-      ),
-    );
-  } catch (e) {
-    print('Error deleting all bookings: $e');
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Error deleting bookings'),
-        backgroundColor: Colors.red,
-      ),
-    );
   }
-}
-
-
-
 }

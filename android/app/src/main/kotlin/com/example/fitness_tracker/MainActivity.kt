@@ -1,4 +1,4 @@
-package com.example.villa_costa
+package com.example.ezee
 
 import io.flutter.embedding.android.FlutterActivity
 

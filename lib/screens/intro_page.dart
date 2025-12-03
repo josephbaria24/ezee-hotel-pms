@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-import 'package:villa_costa/screens/login_signup_page.dart';
+import 'package:ezee/screens/login_signup_page.dart';
 
 class OnboardingPage {
   final String title;

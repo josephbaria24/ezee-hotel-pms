@@ -3,14 +3,14 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:villa_costa/data/room_data.dart';
-import 'package:villa_costa/model/room_model.dart';
-import 'package:villa_costa/screens/dashboard.dart';
-import 'package:villa_costa/screens/login_signup_page.dart';
+import 'package:ezee/data/room_data.dart';
+import 'package:ezee/model/room_model.dart';
+import 'package:ezee/screens/dashboard.dart';
+import 'package:ezee/screens/login_signup_page.dart';
 import 'dart:math';
 
-import 'package:villa_costa/screens/ratings_page.dart';
-import 'package:villa_costa/screens/walkIn_page.dart';
+import 'package:ezee/screens/ratings_page.dart';
+import 'package:ezee/screens/walkIn_page.dart';
 
 final random = Random();
 final guestNames = [

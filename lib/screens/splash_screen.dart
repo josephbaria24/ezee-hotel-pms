@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:villa_costa/screens/intro_page.dart';
+import 'package:ezee/screens/intro_page.dart';
 import 'dart:async';
 import 'login_signup_page.dart';
 
@@ -41,7 +41,7 @@ class LottieWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Lottie.asset(
-      'lib/assets/icons/splash.json',
+      'lib/assets/icons/splash2.json',
       width: 200,
       height: 200,
       fit: BoxFit.contain,

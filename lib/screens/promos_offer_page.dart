@@ -13,13 +13,13 @@ class PromosAndOffersScreen extends StatefulWidget {
 class _PromosAndOffersScreenState extends State<PromosAndOffersScreen> {
   final promos = [
     {
-      'image': 'lib/assets/images/1.png',
+      'image': 'lib/assets/images/palaweno.jpg',
       'title': 'Palaweño Promo',
       'description':
           'Exclusive discounts for Palawan locals! Relax and unwind with special rates right in the heart of paradise.',
     },
     {
-      'image': 'lib/assets/images/3.png',
+      'image': 'lib/assets/images/returning.jpg',
       'title': 'Returning Guest',
       'description':
           'Welcome back! Enjoy personalized perks and a warm return with every stay.',
@@ -82,7 +82,7 @@ class _PromosAndOffersScreenState extends State<PromosAndOffersScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Welcome to Villa Costa Promos & Offers!',
+                    'Welcome to Ezee Hotel Promos & Offers!',
                     style: GoogleFonts.poppins(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,

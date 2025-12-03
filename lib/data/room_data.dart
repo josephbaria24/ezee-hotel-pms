@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:villa_costa/model/room_model.dart';
+import 'package:ezee/model/room_model.dart';
 
 final List<HotelModel> hotels = [
   HotelModel(
@@ -9,7 +9,7 @@ final List<HotelModel> hotels = [
     price: 4500,
     rating: 4.9,
     reviewCount: 230,
-    imageUrl: 'lib/assets/images/room1.png',
+    imageUrl: 'lib/assets/images/single-bedroom.jpg',
     amenities: [
       Amenity(icon: Icons.bed, label: '1 single bed'),
       Amenity(icon: Icons.shower, label: 'Shower'),
@@ -37,7 +37,7 @@ final List<HotelModel> hotels = [
     price: 6700,
     rating: 4.7,
     reviewCount: 195,
-    imageUrl: 'lib/assets/images/room2.png',
+    imageUrl: 'lib/assets/images/double-bedroom.jpg',
     amenities: [
       Amenity(icon: Icons.bed, label: '2 single bed'),
       Amenity(icon: Icons.shower, label: 'Shower'),
@@ -64,12 +64,12 @@ final List<HotelModel> hotels = [
   ),
   HotelModel(
     id: 'room3',
-    name: 'Tripple Room',
+    name: 'Triple Room',
     location: 'A room that accomodates three people, with a combination of beds.',
     price: 9000,
     rating: 4.8,
     reviewCount: 178,
-    imageUrl: 'lib/assets/images/room3.png',
+    imageUrl: 'lib/assets/images/triple-bedroom.jpg',
     amenities: [
       Amenity(icon: Icons.bed, label: '1 queen size bed'),
       Amenity(icon: Icons.bed, label: '1 single bed'),
@@ -106,7 +106,7 @@ final List<HotelModel> hotels = [
     price: 13500,
     rating: 4.8,
     reviewCount: 178,
-    imageUrl: 'lib/assets/images/room4.png',
+    imageUrl: 'lib/assets/images/quad-bedroom.jpg',
     amenities: [
       Amenity(icon: Icons.bed, label: '2 queen size bed'),
       Amenity(icon: Icons.shower, label: 'Shower'),
@@ -145,7 +145,7 @@ final List<HotelModel> hotels = [
     price: 16000,
     rating: 4.8,
     reviewCount: 178,
-    imageUrl: 'lib/assets/images/room6.png',
+    imageUrl: 'lib/assets/images/cameron.jpg',
     amenities: [
       Amenity(icon: Icons.bed, label: '2 queen size bed'),
       Amenity(icon: Icons.shower, label: 'Shower'),
@@ -189,7 +189,7 @@ final List<HotelModel> hotels = [
     price: 18500,
     rating: 4.8,
     reviewCount: 178,
-    imageUrl: 'lib/assets/images/room7.png',
+    imageUrl: 'lib/assets/images/cameron2.jpg',
     amenities: [
       Amenity(icon: Icons.bed, label: '2 queen size bed'),
       Amenity(icon: Icons.shower, label: 'Shower'),
@@ -233,7 +233,7 @@ final List<HotelModel> hotels = [
       price: 20000,
       rating: 4.8,
       reviewCount: 178,
-      imageUrl: 'lib/assets/images/room8.png',
+      imageUrl: 'lib/assets/images/luxury.jpg',
       amenities: [
       Amenity(icon: Icons.bed, label: '2 queen size bed'),
       Amenity(icon: Icons.shower, label: 'Shower'),
