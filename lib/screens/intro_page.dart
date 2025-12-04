@@ -54,7 +54,7 @@ class _IntroScreenState extends State<IntroScreen> {
   subtitle: 'Begin your journey with curated\nhotel experiences.',
   caption: 'Where comfort meets convenience,\ndesigned just for you.',
   footer: 'intro',
-  backgroundPath: 'lib/assets/images/bgintro.jpg',
+  backgroundPath: 'lib/assets/images/intro2.jpg',
 ),
 
     OnboardingPage(
@@ -62,7 +62,7 @@ class _IntroScreenState extends State<IntroScreen> {
       subtitle: 'Find rooms, facilities, and memories\nall in one place.',
       caption: 'Everything you need. No hassle.',
       footer: 'Ezee Hotel',
-      backgroundPath: 'lib/assets/images/bg2.jpg',
+      backgroundPath: 'lib/assets/images/intro3.jpg',
     ),
     OnboardingPage(
       title: 'Book Instantly.\nStay Effortlessly.',
